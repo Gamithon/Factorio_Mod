@@ -1,35 +1,40 @@
---control.lua
+-- control.lua for Elemental Enemies Mod
 
--- Function to initialize or reset global tables
-local function initialize_global_data()
-    global.has_joined_before = global.has_joined_before or {}
+-- Utility function to determine the elemental type based on nearby resources
+local function determine_elemental_type(surface, position)
+    -- Placeholder logic to determine elemental type
+    -- In a real implementation, you would analyze the types and amounts of nearby resources to decide the elemental type
+    local resources = surface.find_entities_filtered({area = {{position.x - 10, position.y - 10}, {position.x + 10, position.y + 10}}, type = "resource"})
+    if #resources > 0 then
+        -- Example: if any resource is found, arbitrarily choose "fire" for this draft
+        return "fire"
+    end
+    return nil  -- No elemental type determined
 end
 
--- Call the initialization function on mod startup
-script.on_init(initialize_global_data)
-
--- Call the initialization function when the mod configuration changes (e.g., mod added to existing save)
-script.on_configuration_changed(initialize_global_data)
-
--- Function for when a player joins the game
-script.on_event(defines.events.on_player_joined_game, function(event)
-    local player_index = event.player_index
-    local player = game.get_player(player_index)
-
-    if player then
-        -- Initialize the global table if not already initialized (safeguard)
-        if not global.has_joined_before then
-            initialize_global_data()
-        end
-
-        -- Check if the player has joined before
-        if global.has_joined_before[player_index] then
-            -- The player has joined before; display the welcome back message
-            player.print("Welcome back, " .. player.name)
-        else
-            -- First time the player has joined, greet them
-            player.print("Warmest considerings, " .. player.name)
-            global.has_joined_before[player_index] = true
-        end
+-- Function to spawn an elemental enemy based on the determined type
+local function spawn_elemental_enemy(surface, position, elemental_type)
+    if elemental_type == "fire" then
+        surface.create_entity({name = "elemental-biter-fire", position = position, force = "enemy"})
+        -- You can expand this to include other elemental types, each with their specific entity name
     end
-end)
+end
+
+-- Event handler for when a new chunk is generated
+local function on_chunk_generated(event)
+    local surface = event.surface
+    local area = event.area
+    local center = {x = (area.left_top.x + area.right_bottom.x) / 2, y = (area.left_top.y + area.right_bottom.y) / 2}
+
+    -- Determine the elemental type based on nearby resources
+    local elemental_type = determine_elemental_type(surface, center)
+    if elemental_type then
+        -- Spawn the elemental enemy at the center of the chunk
+        spawn_elemental_enemy(surface, center, elemental_type)
+    end
+end
+
+-- Register the event handler for chunk generation
+script.on_event(defines.events.on_chunk_generated, on_chunk_generated)
+
+-- Additional event handlers and logic can be added here to further define the behavior and interactions of your elemental enemies

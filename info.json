@@ -1,9 +1,9 @@
 {
-	"name": "welcome-message",
+	"name": "Elemental-Mobs",
 	"version": "1.0.0",
-	"title": "welcome message",
-	"author": "OhMyGoodness",
+	"title": "Elemental Mobs",
+	"author": "OhMyGoodness,Gamithon",
 	"description": "This mod displays a short welcome message to players returning to the game and those who are joining the game for the first time", 
 	"factorio_version": "1.1",
-	"dependencies": ["base"]
+	"dependencies": [""base >= 1.1", "Rampant >= 1.0.0""]
 }
